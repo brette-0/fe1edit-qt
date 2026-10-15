@@ -7,6 +7,7 @@
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QtEndian>
 
 void Editor::onOpen() {
     QFileDialog dialog(this, tr("Open File"));
@@ -36,10 +37,20 @@ void Editor::onOpen() {
 }
 
 Editor::Editor(QWidget *parent) : QMainWindow(parent) {
-    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
+    QMenu *fileMenu         = menuBar()->addMenu(tr("&File"));
+    QMenu *mapOption        = menuBar()->addMenu(tr("&Map"));
+    QMenu *animOption       = menuBar()->addMenu(tr("&Animations"));
+    QMenu *textOption       = menuBar()->addMenu(tr("&Text"));
+    QMenu *shopOption       = menuBar()->addMenu(tr("&Shop"));
+    QMenu *attributesOption = menuBar()->addMenu(tr("&Attributes"));
+    QMenu *characterOption  = menuBar()->addMenu(tr("&Characters"));
+
     QAction *open   = fileMenu->addAction(tr("&Open ROM"));
     QAction *save   = fileMenu->addAction(tr("&Save"));
     QAction *saveAs = fileMenu->addAction(tr("&Save As"));
+
+
+
 
     connect(open, &QAction::triggered, this, &Editor::onOpen);
 
