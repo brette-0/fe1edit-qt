@@ -1,6 +1,7 @@
 #include "game.h"
 
-eError Game::ParseConfig() {
-    translation = eTranslation::JAPANESE;
-    return eError::OK;
+
+Game::Game(const QByteArray &rom, const eTranslation translation) {
+    this->rom = rom;
+    this->translation = translation;
 }

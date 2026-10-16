@@ -8,6 +8,12 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QtEndian>
+#include <QDialog>
+#include <QComboBox>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+
+#include "game.h"
 
 void Editor::onOpen() {
     QFileDialog dialog(this, tr("Open File"));
@@ -31,12 +37,41 @@ void Editor::onOpen() {
         box.exec();
     }
 
+    QDialog dlg(this);
+    dlg.setWindowTitle(tr("Select Translation"));
+
+    auto *combo = new QComboBox(&dlg);
+    combo->addItem(tr("Japanese"), static_cast<int>(Game::eTranslation::JAPANESE));
+    combo->addItem(tr("English"),  static_cast<int>(Game::eTranslation::ENGLISH));
+    combo->addItem(tr("Italian"),  static_cast<int>(Game::eTranslation::ITALIAN));
+    combo->addItem(tr("Spanish"),  static_cast<int>(Game::eTranslation::SPANISH));
+    combo->addItem(tr("Arabic"),   static_cast<int>(Game::eTranslation::ARABIC));
+
+    auto *buttons = new QDialogButtonBox(
+    QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dlg);
+
+    auto *form = new QFormLayout(&dlg);
+    form->addRow(tr("ROM language:"), combo);
+    form->addRow(buttons);
+
+    connect(buttons, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
+
+    if (dlg.exec() != QDialog::Accepted) return;
+    const auto chosen = static_cast<Game::eTranslation>(combo->currentData().toInt());
+
     const QByteArray rom = file.readAll();
-    // open ROM into memory
-    // identify which translation is being used (hard part)
+    session = {
+        new Game(rom, chosen)
+    };
+
+
+    // TODO: later identify which translation is being used (hard part)
 }
 
 Editor::Editor(QWidget *parent) : QMainWindow(parent) {
+    session = { };
+
     QMenu *fileMenu         = menuBar()->addMenu(tr("&File"));
     QMenu *mapOption        = menuBar()->addMenu(tr("&Map"));
     QMenu *animOption       = menuBar()->addMenu(tr("&Animations"));
@@ -45,12 +80,9 @@ Editor::Editor(QWidget *parent) : QMainWindow(parent) {
     QMenu *attributesOption = menuBar()->addMenu(tr("&Attributes"));
     QMenu *characterOption  = menuBar()->addMenu(tr("&Characters"));
 
-    QAction *open   = fileMenu->addAction(tr("&Open ROM"));
-    QAction *save   = fileMenu->addAction(tr("&Save"));
-    QAction *saveAs = fileMenu->addAction(tr("&Save As"));
-
-
-
+    const QAction* open   = fileMenu->addAction(tr("&Open ROM"));
+    const QAction* save   = fileMenu->addAction(tr("&Save"));
+    const QAction* saveAs = fileMenu->addAction(tr("&Save As"));
 
     connect(open, &QAction::triggered, this, &Editor::onOpen);
 

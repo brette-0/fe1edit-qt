@@ -1,16 +1,22 @@
 #pragma once
 
+#include <qbytearray.h>
+
 #include "errors.h"
 
 class Game {
+public:
     enum class eTranslation {
         JAPANESE,
-        ENGLISH
+        ENGLISH,
+        SPANISH,
+        ITALIAN,
+        ARABIC
     };
 
-public:
-     eError ParseConfig();
+    Game(const QByteArray &rom, eTranslation translation);
 
 private:
-    eTranslation translation = eTranslation::JAPANESE;
+    eTranslation translation;
+    QByteArray rom;
 };
