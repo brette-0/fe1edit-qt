@@ -10,7 +10,7 @@ public:
     explicit Editor(QWidget *parent = nullptr);
 
 private:
-    Session session;
+    Session session{};
 
 private slots:
     void onOpen();

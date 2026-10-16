@@ -61,9 +61,15 @@ void Editor::onOpen() {
     const auto chosen = static_cast<Game::eTranslation>(combo->currentData().toInt());
 
     const QByteArray rom = file.readAll();
-    session = {
-        new Game(rom, chosen)
-    };
+
+    if (const auto err = Game::Parse(rom, chosen); err != eError::OK) {
+        QMessageBox box(this);
+        box.setIcon(QMessageBox::Warning);
+        box.setWindowTitle(tr("Unsupported ROM"));
+        box.setText(tr(GetErrorContext(err)));
+        box.setStandardButtons(QMessageBox::Ok);
+        box.exec();
+    }
 
 
     // TODO: later identify which translation is being used (hard part)

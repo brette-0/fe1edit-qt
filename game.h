@@ -1,11 +1,16 @@
 #pragma once
 
 #include <qbytearray.h>
+#include <QtEndian>
 
 #include "errors.h"
 
 class Game {
 public:
+    struct Attributes {
+        int nMaps;
+    };
+
     enum class eTranslation {
         JAPANESE,
         ENGLISH,
@@ -14,9 +19,14 @@ public:
         ARABIC
     };
 
-    Game(const QByteArray &rom, eTranslation translation);
+    static eError Parse(const QByteArray &_rom, eTranslation _translation);
+
 
 private:
-    eTranslation translation;
-    QByteArray rom;
+    static eError               ParseMapData();
+    [[nodiscard]]
+    static int                  GetMapCount();
+    static inline auto          translation = eTranslation::JAPANESE;
+    static inline QByteArray    rom{ };
+    static inline Attributes    attributes{ };
 };
